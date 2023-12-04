@@ -2,15 +2,46 @@
 <html>
 <head>
 	<link href="store.css" type="text/css" rel="stylesheet">
-	<title>G&A/title>
-		<script>
-		</script>
+	<title>G&A</title>
+	<script>
+		function getJson()
+		{
+			theURL = "http://18.207.115.190/runphp/getshoes.php";
+			console.log( theURL );
+			fetch( theURL )										//get the raw answer
+				.then( res => res.json() )						//get structure
+				.then( data => display( data ) );			//convert and show
+		}
+		
+		function display( theArray )
+		{
+			count = 0;
+			text = "<h3>Running Shoes</h3>\n<table>\n";
+			theArray.forEach(function( item ){
+				console.log( item );
+				if(count == 0){
+					text+="<tr>";
+				}
+				
+				item.forEach(function( elem ){
+					text+="<td> "+ elem + "</td>";
+				});
+				text+="</tr>\n";
+				count += 1;
+			});
+			text+="</table>\n"
+			 document.getElementById( 'theTable' ).innerHTML = text;
+		}
+	</script>
 </head>
 <body>
 	<h1>G&A Running Shoe Store</h1>
     <h3></h3>
+	<div>
+		<img src="">
+	</div>
+	<div id="theShoes"></div>
 	<script>
 	</script>
-	
 </body>
 </html>
