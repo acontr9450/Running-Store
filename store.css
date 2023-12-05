@@ -7,6 +7,7 @@ td{
     position: relative;
     max-width: 33%;
     box-sizing: border-box;
+    padding: 2px;
 }
 td img{
     max-width: 100%;
@@ -14,14 +15,14 @@ td img{
     position: absolute;
     top: 10px;
     left: 20px;
-    margin-bottom: 50px;
+    margin-bottom: 25px;
     transition: 0.3s ease
 }
 
 td p{
-    margin-top: 200px;
+    margin-top: 275px;
     margin-left: 20px;
-    font-size:x-large;
+    font-size: x-large;
 }
 
 td img:hover{

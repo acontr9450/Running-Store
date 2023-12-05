@@ -10,7 +10,9 @@ $pass = 'angel767';
 $dsn = "mysql:host=$host;dbname=$db";
 
 if( !empty( $_GET[ "shoe" ] ) && !empty( $_GET[ "gender" ] ) ){
-    $query = "SELECT Type, Size FROM shoes WHERE Shoe ='" + $_GET[ "shoe" ] + "'AND Gender='" + $_GET[ "gender" ] + "';";
+    $shoe = $_GET[ "shoe" ];
+    $gender = $_GET[ "gender" ];
+    $query = 'SELECT Size, Type FROM shoes WHERE Shoe=' .$shoe . ' AND Gender=' .$gender . ';';
     $oneShoe = true;
 }
 else{
@@ -37,7 +39,7 @@ die( "<h3>Error in query: " . $e ->getMessage() . "</h3>" );
 $list = array();
 if($oneShoe){
     foreach( $rows as $row ){
-        array_push( $list, array( $row[0], $row[1], $row[2], $row[3], $row[4] ));
+        array_push( $list, array( $row[0], $row[1] ));
     }
 }
 else{

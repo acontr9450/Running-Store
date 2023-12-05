@@ -19,7 +19,7 @@
 			price = "$";
 			shoeName = "";
 			gender = "";
-			text = "<h3>Running Shoes</h3>\n<table>\n";
+			text = "<h2>Running Shoes</h2>\n<table>\n";
 			theArray.forEach(function( item ){
 				console.log( item );
 				if(cell == 0){
@@ -28,13 +28,23 @@
 				item.forEach(function( elem ){
 					switch (element){
 						case 0:
-							text+= "<td><p>" + elem; gender = elem; break;
+							text += "<td><p>" + elem; 
+							gender = elem; 
+							shoeTitle += gender;
+							break;
 						case 1:
-							text+= " " + elem; break;
+							text += " " + elem;
+							shoeTitle += " " + elem;
+							break;
 						case 2:
-							text+= " " + elem; shoeName = elem; break;
+							text += " " + elem; 
+							shoeName = elem; 
+							shoeTitle += " " + elem;
+							break;
 						case 3:
-							text+= "<br>$" + elem + "</p>"; break;
+							text += "<br>$" + elem + "</p>";
+							price += elem;
+							break;
 						case 4:
 							text+= getImage(elem) + "</td>"; element = -1; break;
 					}
@@ -42,7 +52,7 @@
 				});
 				cell++;
 				if(cell == 3){
-					text+="/<tr>\n";
+					text+="</tr>\n";
 					cell = 0;
 				}
 			});
@@ -50,12 +60,22 @@
 			document.getElementById( 'theShoes' ).innerHTML = text;
 		}
 
-		function getImage( element ){
-			imageText = '<img src="' + element + '" class="grow"> onclick="getShoe()"';
+		function getImage( element, shoeTitle, shoeName, gender, price ){
+			clickText = element + ", " + shoeTitle + ", " + shoeName + ", " + gender + ", " + price;
+			imageText = '<img src="' + element + '" class="grow" onclick="getShoe( ' + clickText + ')">';
 			return imageText;
 		}
 
-		//function getShoe(shoe, gender)
+		function getShoe(image, shoeTitle, shoeName, gender, price){
+			theURL = "http://18.207.115.190/runphp/getshoes.php?shoe=" + shoeName + "&gender=" + gender;
+			fetch( theURL )										//get the raw answer
+				.then( res => res.json() )						//get structure
+				.then( data => displayShoe( data, image, shoeTitle, price ) );			//convert and show
+		}
+
+		function displayShoe( theArray, image, shoeTitle, price){
+			
+		}
 	</script>
 </head>
 <body onload="getShoes()">
