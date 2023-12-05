@@ -9,11 +9,12 @@ $user = 'angel';
 $pass = 'angel767';
 $dsn = "mysql:host=$host;dbname=$db";
 
-if( !empty( $_GET[ "query" ] ) )
-	$query = $_GET[ "query" ];
+if( !empty( $_GET[ "shoe" ] ) && !empty( $_GET[ "gender" ] ) ){
+    $query = "SELECT Type, Size FROM shoes WHERE Shoe ='" + $_GET[ "shoe" ] + "'AND Gender='" + $_GET[ "gender" ] + "';";
     $oneShoe = true;
+}
 else{
-	$query = "SELECT DISTINCT Picture, Gender, Brand, Shoe , Price FROM shoes;";
+	$query = "SELECT DISTINCT Gender, Brand, Shoe, Price, Picture FROM shoes;";
     $oneShoe = false; //true when the data of only one shoe is required, false otherwise
 }
 
@@ -26,7 +27,7 @@ die( "<h3>Error in connection: " . $e->getMessage() .
 
 //get data from database
 try {
-    $sql= $query
+    $sql= $query;
     $sth = $pdo->query( $sql );
     $rows = $sth->fetchAll();
 } catch( Exception $e ){

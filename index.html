@@ -4,17 +4,21 @@
 	<link href="store.css" type="text/css" rel="stylesheet">
 	<title>G&A</title>
 	<script>
-		function getShoes( query ){
-			theURL = "http://18.207.115.190/runphp/getshoes.php?query=" + query;
+		function getShoes(){
+			theURL = "http://18.207.115.190/runphp/getshoes.php";
 			console.log( theURL );
 			fetch( theURL )										//get the raw answer
 				.then( res => res.json() )						//get structure
-				.then( data => display( data ) );			//convert and show
+				.then( data => displayShoes( data ) );			//convert and show
 		}
 		
 		function displayShoes( theArray ){
 			element = 0;
 			cell = 0;
+			shoeTitle = "";
+			price = "$";
+			shoeName = "";
+			gender = "";
 			text = "<h3>Running Shoes</h3>\n<table>\n";
 			theArray.forEach(function( item ){
 				console.log( item );
@@ -24,15 +28,15 @@
 				item.forEach(function( elem ){
 					switch (element){
 						case 0:
-							text+= "<td>"+ getImage(elem); break;
+							text+= "<td><p>" + elem; gender = elem; break;
 						case 1:
-							text+= "<p>" + elem; break;
-						case 2:
 							text+= " " + elem; break;
+						case 2:
+							text+= " " + elem; shoeName = elem; break;
 						case 3:
-							text+= " " + elem + "</p>"; break;
+							text+= "<br>$" + elem + "</p>"; break;
 						case 4:
-							text+= "$" + elem + "</td>"; element = -1; break;
+							text+= getImage(elem) + "</td>"; element = -1; break;
 					}
 					element++;
 				});
@@ -47,14 +51,15 @@
 		}
 
 		function getImage( element ){
-			imageText = '<img src="' + element + '" class="grow"> onclick="getShoe()';
+			imageText = '<img src="' + element + '" class="grow"> onclick="getShoe()"';
 			return imageText;
 		}
+
+		//function getShoe(shoe, gender)
 	</script>
 </head>
-<body>
+<body onload="getShoes()">
 	<h1>G&A Running Shoe Store</h1>
-    <h3></h3>
 	<div id="theShoes"></div>
 	<script>
 	</script>
