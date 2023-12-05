@@ -4,42 +4,57 @@
 	<link href="store.css" type="text/css" rel="stylesheet">
 	<title>G&A</title>
 	<script>
-		function getJson()
-		{
-			theURL = "http://18.207.115.190/runphp/getshoes.php";
+		function getShoes( query ){
+			theURL = "http://18.207.115.190/runphp/getshoes.php?query=" + query;
 			console.log( theURL );
 			fetch( theURL )										//get the raw answer
 				.then( res => res.json() )						//get structure
 				.then( data => display( data ) );			//convert and show
 		}
 		
-		function display( theArray )
-		{
-			count = 0;
+		function displayShoes( theArray ){
+			element = 0;
+			cell = 0;
 			text = "<h3>Running Shoes</h3>\n<table>\n";
 			theArray.forEach(function( item ){
 				console.log( item );
-				if(count == 0){
-					text+="<tr>";
+				if(cell == 0){
+					text+= "<tr>";
 				}
-				
 				item.forEach(function( elem ){
-					text+="<td> "+ elem + "</td>";
+					switch (element){
+						case 0:
+							text+= "<td>"+ getImage(elem); break;
+						case 1:
+							text+= "<p>" + elem; break;
+						case 2:
+							text+= " " + elem; break;
+						case 3:
+							text+= " " + elem + "</p>"; break;
+						case 4:
+							text+= "$" + elem + "</td>"; element = -1; break;
+					}
+					element++;
 				});
-				text+="</tr>\n";
-				count += 1;
+				cell++;
+				if(cell == 3){
+					text+="/<tr>\n";
+					cell = 0;
+				}
 			});
 			text+="</table>\n"
-			 document.getElementById( 'theTable' ).innerHTML = text;
+			document.getElementById( 'theShoes' ).innerHTML = text;
+		}
+
+		function getImage( element ){
+			imageText = '<img src="' + element + '" class="grow"> onclick="getShoe()';
+			return imageText;
 		}
 	</script>
 </head>
 <body>
 	<h1>G&A Running Shoe Store</h1>
     <h3></h3>
-	<div>
-		<img src="">
-	</div>
 	<div id="theShoes"></div>
 	<script>
 	</script>

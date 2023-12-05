@@ -9,8 +9,13 @@ $user = 'angel';
 $pass = 'angel767';
 $dsn = "mysql:host=$host;dbname=$db";
 
-//true when the data of only one shoe is required, false otherwise
-$oneShoe = false;
+if( !empty( $_GET[ "query" ] ) )
+	$query = $_GET[ "query" ];
+    $oneShoe = true;
+else{
+	$query = "SELECT DISTINCT Picture, Gender, Brand, Shoe , Price FROM shoes;";
+    $oneShoe = false; //true when the data of only one shoe is required, false otherwise
+}
 
 //try to reach/open database
 try {$pdo = new PDO( $dsn, $user, $pass );
@@ -21,24 +26,18 @@ die( "<h3>Error in connection: " . $e->getMessage() .
 
 //get data from database
 try {
-    if(!empty( $_GET[ "query" ])){
-        $oneShoe = true;
-    }
-    else{
-        $sql="SELECT DISTINCT Picture, Gender, Brand, Shoe , Price
-            FROM shoes;";
-        $sth = $pdo->query( $sql );
-        $rows = $sth->fetchAll();
-    }
-
+    $sql= $query
+    $sth = $pdo->query( $sql );
+    $rows = $sth->fetchAll();
 } catch( Exception $e ){
-die( "<h3>Error in query: " . $e ->getMessage() .
-"</h3>" );
+die( "<h3>Error in query: " . $e ->getMessage() . "</h3>" );
 }
 
 $list = array();
 if($oneShoe){
-
+    foreach( $rows as $row ){
+        array_push( $list, array( $row[0], $row[1], $row[2], $row[3], $row[4] ));
+    }
 }
 else{
     foreach( $rows as $row ){
