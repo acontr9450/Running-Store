@@ -1,8 +1,31 @@
-.grow{
-    transition: .3s ease
+table{
+    width: 100%;
+    border-collapse: collapse;
 }
-.grow:hover{
-    transform: scale(1.1);
-    -webkit-transform: scale(1.1);
-    -ms-transform: scale(1.1);
+td{
+    text-align: left;
+    position: relative;
+    max-width: 33%;
+    box-sizing: border-box;
+}
+td img{
+    max-width: 100%;
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    margin-bottom: 50px;
+    transition: 0.3s ease
+}
+
+td p{
+    margin-top: 200px;
+    margin-left: 20px;
+    font-size:x-large;
+}
+
+td img:hover{
+    transform: scale(1.05);
+    -webkit-transform: scale(1.05);
+    -ms-transform: scale(1.05);
 }
