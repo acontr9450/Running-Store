@@ -6,7 +6,6 @@
 	<script>
 		function getShoes(){
 			theURL = "http://18.207.115.190/runphp/getshoes.php";
-			console.log( theURL );
 			fetch( theURL )										//get the raw answer
 				.then( res => res.json() )						//get structure
 				.then( data => displayShoes( data ) );			//convert and show
@@ -21,7 +20,6 @@
 			gender = "";
 			text = "<h2>Running Shoes</h2>\n<table>\n";
 			theArray.forEach(function( item ){
-				console.log( item );
 				if(cell == 0){
 					text+= "<tr>";
 				}
@@ -46,7 +44,9 @@
 							price += elem;
 							break;
 						case 4:
-							text+= getImage(elem) + "</td>"; element = -1; break;
+							text += getImage(elem) + getSizes(shoeName, gender) + "</td>"; 
+							element = -1; 
+							break;
 					}
 					element++;
 				});
@@ -60,28 +60,65 @@
 			document.getElementById( 'theShoes' ).innerHTML = text;
 		}
 
-		function getImage( element, shoeTitle, shoeName, gender, price ){
-			clickText = element + ", " + shoeTitle + ", " + shoeName + ", " + gender + ", " + price;
-			imageText = '<img src="' + element + '" class="grow" onclick="getShoe( ' + clickText + ')">';
+		function getImage( element ){
+			imageText = '<img src=\"' + element + '" class=\"grow\">';
 			return imageText;
 		}
 
-		function getShoe(image, shoeTitle, shoeName, gender, price){
-			theURL = "http://18.207.115.190/runphp/getshoes.php?shoe=" + shoeName + "&gender=" + gender;
-			fetch( theURL )										//get the raw answer
+		function getSizes(shoeName, gender){
+			theURL = 'http://18.207.115.190/runphp/getshoes.php?shoe=\"' + shoeName + '\"&gender=\"'+ gender + '\"';
+			text = "";
+			fetch( theURL )									//get the raw answer
 				.then( res => res.json() )						//get structure
-				.then( data => displayShoe( data, image, shoeTitle, price ) );			//convert and show
+				.then( data => displaySizes( data ) );			//convert and show
 		}
 
-		function displayShoe( theArray, image, shoeTitle, price){
-			
+		function displaySizes( theArray ){
+			count = 0;
+			size = "";
+			text = '<form id=\"addToCartForm\" onsubmit=\"addToCart(); return false;\">\n';
+			text += '<label for=\"shoeSize\">Shoe Size:</label>\n<select id=\"shoeSize\" name=\"shoeSize\">\n';
+			theArray.forEach(function( item ){
+				text += '<option value=\"';
+				item.forEach(function( elem ){
+					switch(count){
+						case 0:
+							text += elem + '\" data-quantity=\"';
+							size = elem;
+							break;
+						case 1:
+							text += elem + '\">US ' + size + '(' + elem + ' available)</option>';
+							count = -1;
+							break;
+					}
+					count ++;
+				});
+			});
+			text += '</select>\n<button type=\"submit\" class=\"cart-button\">Add to Cart</button>\n</form>';
+			return text;
 		}
 	</script>
 </head>
 <body onload="getShoes()">
 	<h1>G&A Running Shoe Store</h1>
+	<a href="checkout.html" id="cartButton" class="cart-button">Go to Checkout (0 items)</a>
 	<div id="theShoes"></div>
 	<script>
+		let cartCount = 0;
+
+		function addToCart(productName, price) {
+			// Cart logic
+			alert('Added ' + productName + ' to cart. Price: $' + price);
+
+			// Update the cart count and button text
+			updateCartCount(++cartCount);
+		}
+
+		function updateCartCount(count) {
+			// Update the cart button text with the current count
+			const cartButton = document.getElementById('cartButton');
+			cartButton.textContent = `Go to Checkout (${count} item${count !== 1 ? 's' : ''})`;
+		}
 	</script>
 </body>
 </html>

@@ -12,7 +12,7 @@ $dsn = "mysql:host=$host;dbname=$db";
 if( !empty( $_GET[ "shoe" ] ) && !empty( $_GET[ "gender" ] ) ){
     $shoe = $_GET[ "shoe" ];
     $gender = $_GET[ "gender" ];
-    $query = 'SELECT Size, Type FROM shoes WHERE Shoe=' .$shoe . ' AND Gender=' .$gender . ';';
+    $query = 'SELECT Size, Inventory FROM shoes WHERE Shoe=' .$shoe . ' AND Gender=' .$gender . ';';
     $oneShoe = true;
 }
 else{
