@@ -4,6 +4,8 @@
 	<link href="store.css" type="text/css" rel="stylesheet">
 	<title>G&A</title>
 	<script>
+		const shoes = [];
+
 		function getShoes(){
 			theURL = "http://18.207.115.190/runphp/getshoes.php";
 			fetch( theURL )										//get the raw answer
@@ -14,10 +16,12 @@
 		function displayShoes( theArray ){
 			element = 0;
 			cell = 0;
+			row = 0;
 			shoeTitle = "";
-			price = "$";
+			shoePrice = "$";
 			shoeName = "";
-			gender = "";
+			shoeGender = "";
+			shoeType = "";
 			text = "<h2>Running Shoes</h2>\n<table>\n";
 			theArray.forEach(function( item ){
 				if(cell == 0){
@@ -27,8 +31,8 @@
 					switch (element){
 						case 0:
 							text += "<td><p>" + elem; 
-							gender = elem; 
-							shoeTitle += gender;
+							shoeGender = elem; 
+							shoeTitle += shoeGender;
 							break;
 						case 1:
 							text += " " + elem;
@@ -40,12 +44,27 @@
 							shoeTitle += " " + elem;
 							break;
 						case 3:
-							text += "<br>$" + elem + "</p>";
-							price += elem;
+							text += "<br>" + elem; 
+							shoeType = elem;
 							break;
 						case 4:
-							text += getImage(elem) + getSizes(shoeName, gender) + "</td>"; 
-							element = -1; 
+							text += "<br>$" + elem + "</p>";
+							shoePrice = "$" + elem;
+							break;
+						case 5:
+							const shoe = {
+								imageUrl: elem,
+								title: shoeTitle,
+								name: shoeName,
+								gender: shoeGender,
+								price: shoePrice,
+								type: shoeType
+							};
+							index = (row * 3) + cell;
+							text += getImage(elem) + getSizesBtn(index) + "</td>"; 
+							element = -1;
+							shoeTitle = "";
+							shoes.push(shoe);
 							break;
 					}
 					element++;
@@ -53,6 +72,7 @@
 				cell++;
 				if(cell == 3){
 					text+="</tr>\n";
+					row++;
 					cell = 0;
 				}
 			});
@@ -61,22 +81,33 @@
 		}
 
 		function getImage( element ){
-			imageText = '<img src=\"' + element + '" class=\"grow\">';
+			imageText = '<img src=\"' + element + '\">';
 			return imageText;
 		}
 
-		function getSizes(shoeName, gender){
-			theURL = 'http://18.207.115.190/runphp/getshoes.php?shoe=\"' + shoeName + '\"&gender=\"'+ gender + '\"';
-			text = "";
-			fetch( theURL )									//get the raw answer
-				.then( res => res.json() )						//get structure
-				.then( data => displaySizes( data ) );			//convert and show
+		function getSizesBtn(index){
+			text = '<button onclick=\"getShoe(' + index + ')\">Show Sizes</button>';
+			return text;
 		}
 
-		function displaySizes( theArray ){
+		function getShoe(index){
+			const myShoe = shoes[index];
+			getSizes(myShoe);
+		}
+
+		function getSizes(shoe){
+			theURL = 'http://18.207.115.190/runphp/getshoes.php?shoe=\"' + shoe.name + '\"&gender=\"'+ shoe.gender + '\"';
+			fetch( theURL )									//get the raw answer
+				.then( res => res.json() )						//get structure
+				.then( data => displaySizes( data, shoe ) );			//convert and show
+		}
+
+		function displaySizes( theArray, shoe ){
 			count = 0;
 			size = "";
-			text = '<form id=\"addToCartForm\" onsubmit=\"addToCart(); return false;\">\n';
+			text = '<h2>' + shoe.title + ' - ' + shoe.type + '</h2>\n<img src=\"' + shoe.imageUrl + '\" class=\"shoe\">\n';
+			text += '<p>' + shoe.price +'</p>\n'; 
+			text += '<form id=\"addToCartForm\" onsubmit=\"addToCart(); return false;\">\n';
 			text += '<label for=\"shoeSize\">Shoe Size:</label>\n<select id=\"shoeSize\" name=\"shoeSize\">\n';
 			theArray.forEach(function( item ){
 				text += '<option value=\"';
@@ -87,15 +118,15 @@
 							size = elem;
 							break;
 						case 1:
-							text += elem + '\">US ' + size + '(' + elem + ' available)</option>';
+							text += elem + '\">US ' + size + ' (' + elem + ' available)</option>';
 							count = -1;
 							break;
 					}
 					count ++;
 				});
 			});
-			text += '</select>\n<button type=\"submit\" class=\"cart-button\">Add to Cart</button>\n</form>';
-			return text;
+			text += '</select>\n<button type=\"submit\">Add to Cart</button>\n</form>';
+			document.getElementById( 'theShoes' ).innerHTML = text;
 		}
 	</script>
 </head>

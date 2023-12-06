@@ -16,7 +16,7 @@ if( !empty( $_GET[ "shoe" ] ) && !empty( $_GET[ "gender" ] ) ){
     $oneShoe = true;
 }
 else{
-	$query = "SELECT DISTINCT Gender, Brand, Shoe, Price, Picture FROM shoes;";
+	$query = "SELECT DISTINCT Gender, Brand, Shoe, Type, Price, Picture FROM shoes;";
     $oneShoe = false; //true when the data of only one shoe is required, false otherwise
 }
 
@@ -44,7 +44,7 @@ if($oneShoe){
 }
 else{
     foreach( $rows as $row ){
-        array_push( $list, array( $row[0], $row[1], $row[2], $row[3], $row[4] ));
+        array_push( $list, array( $row[0], $row[1], $row[2], $row[3], $row[4], $row[5] ));
     }
 }
 $answer = json_encode( $list );
