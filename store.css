@@ -1,7 +1,11 @@
 h1{
     text-align: center;
 }
+h2{
+    position: relative;
+}
 table{
+    margin-top: 50px;   
     width: 100%;
     border-collapse: collapse;
 }
@@ -57,6 +61,24 @@ td img:hover{
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 20px;
+}
+
+.home-button{
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: relative;
+    margin: 0 auto;
+}
+
+.home-button:hover {
+    background-color: #2980b9;
 }
 
 p{

@@ -132,6 +132,7 @@
 </head>
 <body onload="getShoes()">
 	<h1>G&A Running Shoe Store</h1>
+	<button onclick="goBackHome()" class="home-button">Home</button>
 	<a href="checkout.html" id="cartButton" class="cart-button">Go to Checkout (0 items)</a>
 	<div id="theShoes"></div>
 	<script>
@@ -149,6 +150,10 @@
 			// Update the cart button text with the current count
 			const cartButton = document.getElementById('cartButton');
 			cartButton.textContent = `Go to Checkout (${count} item${count !== 1 ? 's' : ''})`;
+		}
+
+		function goBackHome(){
+			window.location.href = 'http://18.207.115.190/runningstore/';
 		}
 	</script>
 </body>
