@@ -107,7 +107,7 @@
 			size = "";
 			text = '<h2>' + shoe.title + ' - ' + shoe.type + '</h2>\n<img src=\"' + shoe.imageUrl + '\" class=\"shoe\">\n';
 			text += '<p>' + shoe.price +'</p>\n'; 
-			text += '<form id=\"addToCartForm\" onsubmit=\"addToCart(); return false;\">\n';
+			text += '<form id=\"addToCartForm\" onsubmit=\"addToCart(shoe); return false;\">\n';
 			text += '<label for=\"shoeSize\">Shoe Size:</label>\n<select id=\"shoeSize\" name=\"shoeSize\">\n';
 			theArray.forEach(function( item ){
 				text += '<option value=\"';
@@ -128,22 +128,23 @@
 			text += '</select>\n<button type=\"submit\">Add to Cart</button>\n</form>';
 			document.getElementById( 'theShoes' ).innerHTML = text;
 		}
-	</script>
-</head>
-<body onload="getShoes()">
-	<h1>G&A Running Shoe Store</h1>
-	<button onclick="goBackHome()" class="home-button">Home</button>
-	<a href="checkout.html" id="cartButton" class="cart-button">Go to Checkout (0 items)</a>
-	<div id="theShoes"></div>
-	<script>
-		let cartCount = 0;
 
-		function addToCart(productName, price) {
+		//cart code below 
+		const uniqueID = document.cookie.replace(/(?:(?:^|.*;\s*)uniqueID\s*=\s*([^;]*).*$)|^.*$/, "$1");
+		console.log(uniqueID);
+		let cartCount = getCartCount();
+
+		function addToCart(shoe) {
 			// Cart logic
-			alert('Added ' + productName + ' to cart. Price: $' + price);
+			alert('Added ' + shoe.title + ' to cart. Price: $' + shoe.price);
 
 			// Update the cart count and button text
 			updateCartCount(++cartCount);
+		}
+
+		function getCartCount(){
+			count = 0;
+
 		}
 
 		function updateCartCount(count) {
@@ -152,6 +153,15 @@
 			cartButton.textContent = `Go to Checkout (${count} item${count !== 1 ? 's' : ''})`;
 		}
 
+		updateCartCount(cartCount);
+	</script>
+</head>
+<body onload="getShoes()">
+	<h1>G&A Running Shoe Store</h1>
+	<button onclick="goBackHome()" class="home-button">Home</button>
+	<a href="checkout.html" id="cartButton" class="cart-button"></a>
+	<div id="theShoes"></div>
+	<script>
 		function goBackHome(){
 			window.location.href = 'http://18.207.115.190/runningstore/';
 		}
