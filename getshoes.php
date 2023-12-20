@@ -2,6 +2,7 @@
 header('Content-Type:application/json; charset=UTF-8');
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
+
 //Define the address of the server, database, user, and password
 $host = '172.17.0.3';
 $db = 'runningStore';
