@@ -1,9 +1,10 @@
 //code below is for displaying shoe(s)
 
 const shoes = [];
+let currentShoe = null;
 
 function getShoes(){
-    theURL = "http://18.207.115.190/runphp/getshoes.php";
+    let theURL = "http://18.207.115.190/runphp/getshoes.php";
     fetch( theURL )										
         .then( res => res.json() )						
         .then( data => displayShoes( data ) );			
@@ -49,7 +50,7 @@ function displayShoes( theArray ){
                     break;
                 case 5:
                     const shoe = {
-                        imageUrl: elem,
+                        imageurl: elem,
                         title: shoeTitle,
                         name: shoeName,
                         gender: shoeGender,
@@ -57,7 +58,7 @@ function displayShoes( theArray ){
                         type: shoeType
                     };
                     index = (row * 3) + cell;
-                    text += getImageTxt(elem) + getSizesBtn(index) + "</td>"; 
+                    text += '<img src=\"' + elem + '\">' + '<button onclick=\"getShoe(' + index + ')\">Show Sizes</button>' + "</td>"; 
                     element = -1;
                     shoeTitle = "";
                     shoes.push(shoe);
@@ -76,23 +77,13 @@ function displayShoes( theArray ){
     document.getElementById( 'theShoes' ).innerHTML = text;
 }
 
-function getImageTxt( element ){
-    imageText = '<img src=\"' + element + '\">';
-    return imageText;
-}
-
-function getSizesBtn(index){
-    text = '<button onclick=\"getShoe(' + index + ')\">Show Sizes</button>';
-    return text;
-}
-
 function getShoe(index){
-    const myShoe = shoes[index];
-    getShoeSizes(myShoe);
+    currentShoe = shoes[index];
+    getShoeSizes(currentShoe);
 }
 
 function getShoeSizes(shoe){
-    theURL = 'http://18.207.115.190/runphp/getshoes.php?shoe=\"' + shoe.name + '\"&gender=\"'+ shoe.gender + '\"';
+    let theURL = 'http://18.207.115.190/runphp/getshoes.php?shoe=\"' + shoe.name + '\"&gender=\"'+ shoe.gender + '\"';
     fetch( theURL )									
         .then( res => res.json() )						
         .then( data => displayShoeSizes( data, shoe ) );			
@@ -101,9 +92,9 @@ function getShoeSizes(shoe){
 function displayShoeSizes( theArray, shoe ){
     count = 0;
     size = "";
-    text = '<h2>' + shoe.title + ' - ' + shoe.type + '</h2>\n<img src=\"' + shoe.imageUrl + '\" class=\"shoe\">\n';
+    text = '<h2>' + shoe.title + ' - ' + shoe.type + '</h2>\n<img src=\"' + shoe.imageurl + '\" class=\"shoe\">\n';
     text += '<p>' + shoe.price +'</p>\n'; 
-    text += '<form id=\"addToCartForm\" onsubmit=\"addToCart(shoe); return false;\">\n'; // modify this to call method from shopping-cart.js
+    text += '<form id=\"cartForm\" method="post">\n'; // modify this to call method from shopping-cart.js
     text += '<label for=\"shoeSize\">Shoe Size:</label>\n<select id=\"shoeSize\" name=\"shoeSize\">\n';
     theArray.forEach(function( item ){
         text += '<option value=\"';
@@ -121,34 +112,89 @@ function displayShoeSizes( theArray, shoe ){
             count ++;
         });
     });
-    text += '</select>\n<button type=\"submit\">Add to Cart</button>\n</form>';
+    text += '</select>\n<button id="cartButton" type="submit">Add to Cart</button>\n</form>';
     document.getElementById( 'theShoes' ).innerHTML = text;
+    addCartEventListeners();
 }
 
 //code below is for shopping cart 
+const regex = /uniqueID=([^;\s]+)/;
+let cookie = document.cookie;
+if(!cookie){
+    window.location.assign("http://localhost/runstore/cookieID.php");
+}
+cookie = regex.exec(cookie);
+const uniqueID = cookie ? cookie[1] : null;
+let cartCount = 0;
+cartCount = getCartCount();
 
-const uniqueID = document.cookie.replace(/(?:(?:^|.*;\s*)uniqueID\s*=\s*([^;]*).*$)|^.*$/, "$1");
-console.log(uniqueID);
-let cartCount = getCartCount();
-
-function addToCart(shoe) {
-    // Cart logic
-    alert('Added ' + shoe.title + ' to cart. Price: $' + shoe.price);
-
-    // Update the cart count and button text
-    updateCartCount(++cartCount);
+//create event listeners once shoeSizes are being shown
+function addCartEventListeners(){
+    //let cartButton = document.getElementById("cartButton");
+    let sizeSelect = document.getElementById("shoeSize");
+    let cartForm = document.getElementById("cartForm");
+    if(cartForm){
+        cartForm.addEventListener('submit', function(event){
+            event.preventDefault();
+            const size = sizeSelect.value;
+            addToCart(currentShoe, size);
+        });
+    }
 }
 
-// it will somehow keep a count of cart items for each unique user and their invidual sessions
+function addToCart(shoe, size){
+    alert("Added " + shoe.title + " to cart. Size: " + size + " Price: $" + shoe.price );
+    //create cartShoe object that will be sent to database 
+    const cartShoe = {
+        "id": uniqueID,
+        "title": shoe.title,
+        "imageurl": shoe.imageurl,
+        "price": shoe.price.substring(1),
+        "shoename": shoe.name,
+        "gender": shoe.gender,
+        "shoesize": size
+    };
+    postToCart(cartShoe);
+}
+
+function postToCart(cartShoe){
+    //we need to post user cookie, shoe title, image url, price, name, gender, and size
+    let theURL="http://18.207.115.190/runphp/manageCart.php";
+    fetch( theURL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/JSON"
+        },
+        body: JSON.stringify(cartShoe)
+    }).then( res => {
+        if(!res.ok){
+            console.log("Problem with fetch request");
+            return;
+        }
+    }).then( data => {
+        console.log("Success");
+        getCartCount();
+    }).catch( error => {
+            console.log(error);
+    });
+}
+
 function getCartCount(){
-    count = 0;
-
+    let constID = "";
+    constID += uniqueID;
+    //should fetch the amount of times uniqueID shows up in manageCart.php
+    let theURL = 'http://18.207.115.190/runphp/manageCart.php?query=\"' + uniqueID + '\"';
+    fetch( theURL )										
+        .then( res => res.json() )						
+        .then( data => updateCartCount(data) );	
 }
 
-function updateCartCount(count) {
+function updateCartCount(data) {
+    console.log(data[0]);
+    if(!( data[0] == null )){
+        cartCount = data[0];
+    }
     // Update the cart button text with the current count
     const cartButton = document.getElementById('cartButton');
-    cartButton.textContent = `Go to Checkout (${count} item${count !== 1 ? 's' : ''})`;
+    cartButton.textContent = `Go to Checkout (${cartCount} item${cartCount !== 1 ? 's' : ''})`;
 }
-
-updateCartCount(cartCount);

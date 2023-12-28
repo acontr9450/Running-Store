@@ -4,21 +4,23 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 //Define the address of the server, database, user, and password
-$host = '172.17.0.3';
+$host = '172.17.0.3'; // make sure to change this when server is up
 $db = 'runningStore';
 $user = 'angel';
 $pass = 'angel767';
 $dsn = "mysql:host=$host;dbname=$db";
 
+//if there is a query then get the specified shoe
 if( !empty( $_GET[ "shoe" ] ) && !empty( $_GET[ "gender" ] ) ){
     $shoe = $_GET[ "shoe" ];
     $gender = $_GET[ "gender" ];
     $query = 'SELECT Size, Inventory FROM shoes WHERE Shoe=' .$shoe . ' AND Gender=' .$gender . ';';
-    $oneShoe = true;
+    $oneShoe = true; //true when the data of only one shoe is required, false otherwise
 }
+//else get all the distinct shoes
 else{
 	$query = "SELECT DISTINCT Gender, Brand, Shoe, Type, Price, Picture FROM shoes;";
-    $oneShoe = false; //true when the data of only one shoe is required, false otherwise
+    $oneShoe = false;
 }
 
 //try to reach/open database

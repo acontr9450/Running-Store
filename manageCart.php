@@ -17,33 +17,39 @@ die( "<h3>Error in connection: " . $e->getMessage() .
 "</h3>" );
 }
 
-//get data from database
-try {
-    $userId = $_GET[ "userID" ];
-    if( !empty( $_GET[ "query" ] )){
-        $query = $_GET[ "query" ];
-        $sql= $query;
-        $sth = $pdo->query( $sql );
+//Access cartShoe JSON POSTED from shoes-cart.js or GET with query
+if($_SERVER['REQUEST_METHOD'] === 'POST'){
+    try{
+        $rawData = file_get_contents("php://input");
+        $shoe = json_decode($rawData, true);
+        var_dump($shoe);
+        if(!empty($shoe)){
+            //access shoe data to add to cart database
+            $query = "INSERT INTO shoeCart VALUES (:id, :title, :imageurl, :price, :shoename, :gender, :shoesize);";
+            $stmt = $pdo->prepare( $query );
+            var_dump($stmt->queryString);
+            $stmt->execute($shoe);
+        }        
+    } catch (Exception $e ){
+        echo 'Caught exception', $e->getMessage(), "\n";
+    } catch (Error $e) {
+        // Handle errors (if needed)
+        echo 'Caught error: ', $e->getMessage(), "\n";
     }
-    $query = "SELECT * FROM shoeCart WHERE UserID=" .$userId . ";";
-    $sql= $query;
-    $sth = $pdo->query( $sql );
-    $rows = $sth->fetchAll();
-} catch( Exception $e ){
-die( "<h3>Error in query: " . $e ->getMessage() . "</h3>" );
-}
 
-$list = array();
-if($oneShoe){
-    foreach( $rows as $row ){
-        array_push( $list, array( $row[0], $row[1] ));
+} elseif($_SERVER['REQUEST_METHOD'] === 'GET'){
+    $userquery = $_GET[ "query" ];
+    $sql= "SELECT COUNT(*) FROM shoeCart WHERE UserID = " .$userquery .";";
+    $sth = $pdo->query( $sql );
+    $count = $sth->fetchColumn();
+    if($count){
+        $list = array( $count );
     }
-}
-else{
-    foreach( $rows as $row ){
-        array_push( $list, array( $row[0], $row[1], $row[2], $row[3], $row[4], $row[5] ));
+    else{
+        $list = array(0);
     }
+    $list = $count ? array( $count ) : array(0);
+    $answer = json_encode( $list ); 
+    echo $answer;   
 }
-$answer = json_encode( $list );
-echo $answer;
 ?>
